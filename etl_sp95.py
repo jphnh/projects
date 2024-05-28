@@ -49,19 +49,6 @@ def extract_data(**kwargs):
         entry['adresse'] = pdv.find('adresse').text if pdv.find('adresse') is not None else None
         entry['ville'] = pdv.find('ville').text if pdv.find('ville') is not None else None
         
-        # Récupérer les horaires
-        horaires = {}
-        horaires_elem = pdv.find('horaires')
-        if horaires_elem is not None:
-            for jour in horaires_elem:
-                horaires[jour.get('nom')] = jour.get('ferme')
-        entry['horaires'] = horaires
-        
-        # Récupérer les services
-        services_elem = pdv.find('services')
-        services = [service.text for service in services_elem] if services_elem is not None else []
-        entry['services'] = services
-        
         # Récupérer les prix
         prix = {prix.get('nom'): prix.get('valeur') for prix in pdv.findall('prix')}
         entry['prix'] = prix
@@ -110,7 +97,7 @@ def transform_data(**kwargs):
 
     df = pd.concat([df, ruptures_df], axis=1)
 
-    df = df.drop(columns=['pop', 'services', 'horaires', 'prix', 'ruptures'])
+    df = df.drop(columns=['pop', 'prix', 'ruptures'])
     df = df.rename(columns={'prix_E10':'prix_e10', 'prix_E85':'prix_e85', 'prix_GPLc':'prix_gplc','prix_Gazole':'prix_gazole','prix_SP95':'prix_sp95','prix_SP98':'prix_sp98',
         'ruptures_E10':'ruptures_e10','ruptures_GPLc':'ruptures_gplc','ruptures_Gazole':'ruptures_gazole','ruptures_SP95':'ruptures_sp95','ruptures_SP98':'ruptures_sp98'})
     
