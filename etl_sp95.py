@@ -22,7 +22,8 @@ dag = DAG(
     default_args=default_args,
     description='ETL to BigQuery gas prices in France',
     start_date=datetime(2024, 5, 28),
-    schedule_interval="0 3 * * *"
+    schedule_interval="0 3 * * *",
+    catchup=False
 )
 
 def extract_data(**kwargs):
@@ -30,25 +31,22 @@ def extract_data(**kwargs):
     response = requests.get(url)
     data = response.json()
     
-    # Convertir les données en JSON
-    json_data = json.dumps(data)
-    
-    return json_data
+    return data
 
 def transform_data(**kwargs):
     raw_json_data = kwargs['ti'].xcom_pull(task_ids='extract_data')
     
     # Convertir la chaîne JSON en DataFrame
-    df = pd.read_json(raw_json_data)
+    df = pd.DataFrame(raw_json_data)
 
     df = df.rename(columns={'cp':'code_postal'})
 
     # Ajouter un zéro en tête des codes postaux de 4 chiffres
     df['code_postal'] = df['code_postal'].astype(str).str.zfill(5)
 
-    # Convertir les colonnes longitude et latitude en float et diviser par 100000
-    df['longitude'] = df['longitude'] / 100000
-    df['latitude'] = df['latitude'] / 100000
+    # Diviser les colonnes longitude et latitude par 100000
+    df['longitude'] = df['longitude'].astype(float) / 100000
+    df['latitude'] = df['latitude'].astype(float) / 100000
 
     # Supprimer les colonnes inutiles
     columns_to_drop = ['geom','pop', 'horaires', 'services', 'prix', 'rupture', 'horaires_automate_24_24', 
@@ -69,7 +67,7 @@ def load_to_bigquery(**kwargs):
     dataset_id = 'fr_carburant'
     table_id = 'lofty-generator-398311.fr_carburant.fr_carburant'
 
-    table_ref = f"{project_id}.{dataset_id}.fr_carburant_airflow"
+    table_ref = f"{project_id}.{dataset_id}.fr_carburant"
     
 
     job_config = bigquery.LoadJobConfig(
