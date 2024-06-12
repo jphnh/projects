@@ -1,9 +1,15 @@
 ![SP_95](https://github.com/jphnh/projects/assets/165770792/054a95aa-e0ac-49e4-94b8-f032adf577bd)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/jphnh/projects)
-
+  
 Ce projet contient un script Python conçu pour être exécuté sur Airflow. Le script extrait des données du site https://data.economie.gouv.fr, transforme les données puis les charge vers Google BigQuery.
 
+<div>
+    <a href="https://www.loom.com/share/03435f00ff9e4fefa4cec2cb1474a44d">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/03435f00ff9e4fefa4cec2cb1474a44d-with-play.gif">
+    </a>
+  </div>
+  
 ## Caractéristiques
 
 - Utilise Airflow pour planifier et automatiser le flux de travail via un pipeline d'Extraction, Transformation et Chargement de données
